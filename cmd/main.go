@@ -43,6 +43,7 @@ func main() {
 	router := gin.Default()
 
 	// Initialize the handlers
+	http.NewLoginHandler(router)
 	http.NewStudentHandler(studentUsecase, router)
 	http.NewCourseHandler(courseUsecase, router)
 	http.NewProfessorHandler(professorUsecase, router)

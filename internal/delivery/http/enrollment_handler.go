@@ -3,6 +3,7 @@ package http
 import (
 	"golang-technical-test/internal/domain"
 	"golang-technical-test/internal/usecase"
+	"golang-technical-test/middlewares"
 	"net/http"
 	"sync"
 
@@ -31,13 +32,16 @@ func NewEnrollmentHandler(enrollmentUsecase usecase.IEnrollmentUsecase, router *
 }
 
 func (h *EnrollmentHandler) setupRoutes(router *gin.Engine) {
-	router.GET(h.path, h.GetAll)
-	router.GET(h.path+"/:id", h.GetByID)
-	router.POST(h.path, h.Create)
-	router.PUT(h.path, h.Update)
-	router.DELETE(h.path+"/:id", h.Delete)
-	router.GET(h.path+"/student/:studentID", h.GetByStudentID)
-	router.GET(h.path+"/course/:courseID", h.GetByCourseID)
+	JWTGroup := router.Group("/private")
+	JWTGroup.Use(middlewares.JWTAuthMiddleware())
+
+	JWTGroup.GET(h.path, h.GetAll)
+	JWTGroup.GET(h.path+"/:id", h.GetByID)
+	JWTGroup.POST(h.path, h.Create)
+	JWTGroup.PUT(h.path, h.Update)
+	JWTGroup.DELETE(h.path+"/:id", h.Delete)
+	JWTGroup.GET(h.path+"/student/:studentID", h.GetByStudentID)
+	JWTGroup.GET(h.path+"/course/:courseID", h.GetByCourseID)
 }
 
 func (h *EnrollmentHandler) GetAll(c *gin.Context) {
