@@ -30,12 +30,14 @@ func main() {
 	courseRepo := repository.NewCourseRepository(db)
 	professorRepo := repository.NewProfessorRepository(db)
 	gradeRepo := repository.NewGradeRepository(db)
+	enrollmentRepo := repository.NewEnrollmentRepository(db)
 
 	// Initialize the usecases
 	studentUsecase := usecase.NewStudentUsecase(studentRepo)
 	courseUsecase := usecase.NewCourseUsecase(courseRepo)
 	professorUsecase := usecase.NewProfessorUsecase(professorRepo)
 	gradeUsecase := usecase.NewGradeUsecase(gradeRepo)
+	enrollmentUsecase := usecase.NewEnrollmentUsecase(enrollmentRepo)
 
 	// Initialize the router
 	router := gin.Default()
@@ -45,6 +47,7 @@ func main() {
 	http.NewCourseHandler(courseUsecase, router)
 	http.NewProfessorHandler(professorUsecase, router)
 	http.NewGradeHandler(gradeUsecase, router)
+	http.NewEnrollmentHandler(enrollmentUsecase, router)
 
 	// Run the server
 	router.Run(":7777")
