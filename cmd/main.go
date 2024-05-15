@@ -27,15 +27,18 @@ func main() {
 
 	// Initialize the repositories
 	studentRepo := repository.NewStudentRepository(db)
+	courseRepo := repository.NewCourseRepository(db)
 
 	// Initialize the usecases
 	studentUsecase := usecase.NewStudentUsecase(studentRepo)
+	courseUsecase := usecase.NewCourseUsecase(courseRepo)
 
 	// Initialize the router
 	router := gin.Default()
 
 	// Initialize the handlers
 	http.NewStudentHandler(studentUsecase, router)
+	http.NewCourseHandler(courseUsecase, router)
 
 	// Run the server
 	router.Run(":7777")
