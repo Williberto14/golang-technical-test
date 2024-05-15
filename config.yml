@@ -1,0 +1,7 @@
+DB:
+  Driver: mysql
+  Host: localhost
+  Port: 3306
+  User: root
+  Password: qwerty
+  Database: golang_technical_test

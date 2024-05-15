@@ -1,4 +1,4 @@
-package common_models
+package middlewares
 
 import "github.com/dgrijalva/jwt-go"
 
