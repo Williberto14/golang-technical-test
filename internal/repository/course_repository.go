@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"database/sql"
 	"golang-technical-test/database"
 	"golang-technical-test/internal/domain"
 	"sync"
@@ -53,12 +52,8 @@ func (r *CourseRepository) GetAll() ([]*domain.Course, error) {
 }
 
 func (r *CourseRepository) GetByID(id int) (*domain.Course, error) {
-	row := r.db.QueryRow("SELECT ID, Name, Description FROM Courses WHERE ID = ?", id)
 	course := new(domain.Course)
-	err := row.Scan(&course.ID, &course.Name, &course.Description)
-	if err == sql.ErrNoRows {
-		return nil, nil
-	}
+	err := r.db.QueryRow("SELECT ID, Name, Description FROM Courses WHERE ID = ?", id).Scan(&course.ID, &course.Name, &course.Description)
 	if err != nil {
 		return nil, err
 	}
