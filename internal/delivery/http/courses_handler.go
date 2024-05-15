@@ -25,17 +25,17 @@ func NewCourseHandler(coursesUsecase usecase.ICourseUsecase, router *gin.Engine)
 			CoursesUsecase: coursesUsecase,
 			path:           "/courses",
 		}
-		coursesHandlerInstance.setupRoutes(router, coursesHandlerInstance)
+		coursesHandlerInstance.setupRoutes(router)
 	})
 	return coursesHandlerInstance
 }
 
-func (h *CoursesHandler) setupRoutes(router *gin.Engine, coursesHandler *CoursesHandler) {
-	router.GET(h.path, coursesHandler.GetAll)
-	router.GET(h.path+"/:id", coursesHandler.GetByID)
-	router.POST(h.path+"/create", coursesHandler.Create)
-	router.PUT(h.path+"/update/:id", coursesHandler.Update)
-	router.DELETE(h.path+"/delete/:id", coursesHandler.Delete)
+func (h *CoursesHandler) setupRoutes(router *gin.Engine) {
+	router.GET(h.path, h.GetAll)
+	router.GET(h.path+"/:id", h.GetByID)
+	router.POST(h.path+"/create", h.Create)
+	router.PUT(h.path+"/update/:id", h.Update)
+	router.DELETE(h.path+"/delete/:id", h.Delete)
 }
 
 func (h *CoursesHandler) GetAll(c *gin.Context) {

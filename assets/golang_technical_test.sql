@@ -17,15 +17,6 @@ CREATE TABLE Courses (
     Description TEXT
 );
 
--- ProfessorCourse Table (relationship between Professors and Courses)
-CREATE TABLE ProfessorCourse (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    ProfessorID INT,
-    CourseID INT,
-    FOREIGN KEY (ProfessorID) REFERENCES Professors(ID),
-    FOREIGN KEY (CourseID) REFERENCES Courses(ID)
-);
-
 -- Students Table
 CREATE TABLE Students (
     ID INT AUTO_INCREMENT PRIMARY KEY,

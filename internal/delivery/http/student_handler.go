@@ -25,17 +25,17 @@ func NewStudentHandler(studentUsecase usecase.IStudentUsecase, router *gin.Engin
 			StudentUsecase: studentUsecase,
 			path:           "/students",
 		}
-		studentHandlerInstance.setupRoutes(router, studentHandlerInstance)
+		studentHandlerInstance.setupRoutes(router)
 	})
 	return studentHandlerInstance
 }
 
-func (h *StudentHandler) setupRoutes(router *gin.Engine, studentHandler *StudentHandler) {
-	router.GET(h.path, studentHandler.GetAll)
-	router.GET(h.path+"/:id", studentHandler.GetByID)
-	router.POST(h.path+"/create", studentHandler.Create)
-	router.PUT(h.path+"/update/:id", studentHandler.Update)
-	router.DELETE(h.path+"/delete/:id", studentHandler.Delete)
+func (h *StudentHandler) setupRoutes(router *gin.Engine) {
+	router.GET(h.path, h.GetAll)
+	router.GET(h.path+"/:id", h.GetByID)
+	router.POST(h.path+"/create", h.Create)
+	router.PUT(h.path+"/update/:id", h.Update)
+	router.DELETE(h.path+"/delete/:id", h.Delete)
 }
 
 func (h *StudentHandler) GetAll(c *gin.Context) {

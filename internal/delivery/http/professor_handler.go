@@ -23,19 +23,19 @@ func NewProfessorHandler(professorUsecase usecase.IProfessorUsecase, router *gin
 	professorHandlerOnce.Do(func() {
 		professorHandlerInstance = &ProfessorHandler{
 			ProfessorUsecase: professorUsecase,
-			path:             "/professor",
+			path:             "/professors",
 		}
-		professorHandlerInstance.setupRoutes(router, professorHandlerInstance)
+		professorHandlerInstance.setupRoutes(router)
 	})
 	return professorHandlerInstance
 }
 
-func (h *ProfessorHandler) setupRoutes(router *gin.Engine, professorHandler *ProfessorHandler) {
-	router.GET(h.path, professorHandler.GetAll)
-	router.GET(h.path+"/:id", professorHandler.GetByID)
-	router.POST(h.path+"/create", professorHandler.Create)
-	router.PUT(h.path+"/update/:id", professorHandler.Update)
-	router.DELETE(h.path+"/delete/:id", professorHandler.Delete)
+func (h *ProfessorHandler) setupRoutes(router *gin.Engine) {
+	router.GET(h.path, h.GetAll)
+	router.GET(h.path+"/:id", h.GetByID)
+	router.POST(h.path+"/create", h.Create)
+	router.PUT(h.path+"/update/:id", h.Update)
+	router.DELETE(h.path+"/delete/:id", h.Delete)
 }
 
 func (h *ProfessorHandler) GetAll(c *gin.Context) {

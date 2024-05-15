@@ -8,7 +8,7 @@ type Course struct {
 	Description string `json:"description" validate:"required"`
 }
 
-func (c *Course) Validate() error {
+func (v *Course) Validate() error {
 	vali := utils.GetValidator()
-	return vali.Struct(c)
+	return vali.Struct(v)
 }

@@ -11,7 +11,7 @@ type Student struct {
 	Email       string `json:"email" validate:"required"`
 }
 
-func (s *Student) Validate() error {
+func (v *Student) Validate() error {
 	vali := utils.GetValidator()
-	return vali.Struct(s)
+	return vali.Struct(v)
 }
