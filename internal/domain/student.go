@@ -3,7 +3,7 @@ package domain
 import "golang-technical-test/utils"
 
 type Student struct {
-	ID          int    `json:"id" validate:"required"`
+	ID          int    `json:"id"`
 	Name        string `json:"name" validate:"required"`
 	LastName    string `json:"last_name" validate:"required"`
 	DateOfBirth string `json:"date_of_birth" validate:"required"`

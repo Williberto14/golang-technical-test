@@ -48,7 +48,7 @@ var jwtKey = []byte("your_secret_key")
 
 // CreateToken function
 func CreateToken(username string) (string, error) {
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(15 * time.Minute)
 	claims := &Claims{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{

@@ -79,10 +79,16 @@ func (r *StudentRepository) Create(student *domain.Student) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(student.Name, student.LastName, student.DateOfBirth, student.Address, student.Email)
+	result, err := stmt.Exec(student.Name, student.LastName, student.DateOfBirth, student.Address, student.Email)
 	if err != nil {
 		return err
 	}
+
+	courseID, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	student.ID = int(courseID)
 
 	return nil
 }

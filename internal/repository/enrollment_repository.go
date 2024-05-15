@@ -72,10 +72,16 @@ func (r *EnrollmentRepository) Create(enrollment *domain.Enrollment) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(enrollment.StudentID, enrollment.CourseID)
+	result, err := stmt.Exec(enrollment.StudentID, enrollment.CourseID)
 	if err != nil {
 		return err
 	}
+
+	enrollmentId, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	enrollment.ID = int(enrollmentId)
 
 	return nil
 }

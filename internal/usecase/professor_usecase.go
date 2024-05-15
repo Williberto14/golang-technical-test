@@ -45,10 +45,19 @@ func (u *ProfessorUsecase) GetByID(id string) (*domain.Professor, error) {
 }
 
 func (u *ProfessorUsecase) Create(professor *domain.Professor) error {
+	err := professor.Validate()
+	if err != nil {
+		return err
+	}
+
 	return u.ProfessorRepo.Create(professor)
 }
 
 func (u *ProfessorUsecase) Update(professor *domain.Professor) error {
+	err := professor.Validate()
+	if err != nil {
+		return err
+	}
 	return u.ProfessorRepo.Update(professor)
 }
 

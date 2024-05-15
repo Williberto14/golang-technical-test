@@ -45,6 +45,11 @@ func (u *CourseUsecase) GetByID(id string) (*domain.Course, error) {
 }
 
 func (u *CourseUsecase) Create(course *domain.Course) error {
+	err := course.Validate()
+	if err != nil {
+		return err
+	}
+
 	return u.CourseRepo.Create(course)
 }
 

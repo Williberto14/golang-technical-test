@@ -4,6 +4,7 @@ import (
 	"golang-technical-test/internal/domain"
 	"golang-technical-test/internal/usecase"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,7 @@ func NewProfessorHandler(professorUsecase usecase.IProfessorUsecase, router *gin
 	professorHandlerOnce.Do(func() {
 		professorHandlerInstance = &ProfessorHandler{
 			ProfessorUsecase: professorUsecase,
-			path:             "/professors",
+			path:             "/professor",
 		}
 		professorHandlerInstance.setupRoutes(router)
 	})
@@ -44,11 +45,23 @@ func (h *ProfessorHandler) GetAll(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	if len(professors) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No professors found"})
+		return
+	}
+
 	c.JSON(http.StatusOK, professors)
 }
 
 func (h *ProfessorHandler) GetByID(c *gin.Context) {
 	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID cannot be empty"})
+		return
+
+	}
+
 	professor, err := h.ProfessorUsecase.GetByID(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -71,11 +84,28 @@ func (h *ProfessorHandler) Create(c *gin.Context) {
 }
 
 func (h *ProfessorHandler) Update(c *gin.Context) {
+	id := c.Param("id")
+
+	// Check if ID is empty
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID cannot be empty"})
+		return
+	}
+
 	var professor domain.Professor
 	if err := c.ShouldBindJSON(&professor); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	professor.ID = idInt
+
 	if err := h.ProfessorUsecase.Update(&professor); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -85,6 +115,11 @@ func (h *ProfessorHandler) Update(c *gin.Context) {
 
 func (h *ProfessorHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID cannot be empty"})
+		return
+	}
+
 	if err := h.ProfessorUsecase.Delete(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

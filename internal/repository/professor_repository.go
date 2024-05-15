@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"golang-technical-test/database"
 	"golang-technical-test/internal/domain"
 	"sync"
@@ -59,10 +60,17 @@ func (r *ProfessorRepository) GetByID(id int) (*domain.Professor, error) {
 }
 
 func (r *ProfessorRepository) Create(professor *domain.Professor) error {
-	_, err := r.db.Exec("INSERT INTO Professors (Name, Lastname, Email, Specialization) VALUES (?, ?, ?, ?)", professor.Name, professor.LastName, professor.Email, professor.Specialization)
+	result, err := r.db.Exec("INSERT INTO Professors (Name, Lastname, Email, Specialization) VALUES (?, ?, ?, ?)", professor.Name, professor.LastName, professor.Email, professor.Specialization)
 	if err != nil {
 		return err
 	}
+	idResult, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	professor.ID = int(idResult)
+
 	return nil
 }
 
@@ -75,9 +83,19 @@ func (r *ProfessorRepository) Update(professor *domain.Professor) error {
 }
 
 func (r *ProfessorRepository) Delete(id int) error {
-	_, err := r.db.Exec("DELETE FROM Professors WHERE ID = ?", id)
+	result, err := r.db.Exec("DELETE FROM Professors WHERE ID = ?", id)
 	if err != nil {
 		return err
 	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no record with the id: %d was found to delete", id)
+	}
+
 	return nil
 }

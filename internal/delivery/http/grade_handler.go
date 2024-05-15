@@ -4,6 +4,7 @@ import (
 	"golang-technical-test/internal/domain"
 	"golang-technical-test/internal/usecase"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -33,9 +34,9 @@ func NewGradeHandler(gradeUsecase usecase.IGradeUsecase, router *gin.Engine) *Gr
 func (h *GradeHandler) setupRoutes(router *gin.Engine) {
 	router.GET(h.path, h.GetAll)
 	router.GET(h.path+"/:id", h.GetByID)
-	router.POST(h.path, h.Create)
-	router.PUT(h.path, h.Update)
-	router.DELETE(h.path+"/:id", h.Delete)
+	router.POST(h.path+"/create", h.Create)
+	router.PUT(h.path+"/update/:id", h.Update)
+	router.DELETE(h.path+"/delete/:id", h.Delete)
 	router.GET(h.path+"/student/:studentID", h.GetByStudentID)
 	router.GET(h.path+"/course/:courseID", h.GetByCourseID)
 	router.GET(h.path+"/professor/:professorID", h.GetByProfessorID)
@@ -45,6 +46,11 @@ func (h *GradeHandler) GetAll(c *gin.Context) {
 	grades, err := h.GradeUsecase.GetAll()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(grades) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No grades found"})
 		return
 	}
 	c.JSON(http.StatusOK, grades)
@@ -76,12 +82,29 @@ func (h *GradeHandler) Create(c *gin.Context) {
 }
 
 func (h *GradeHandler) Update(c *gin.Context) {
+	id := c.Param("id")
+
+	// Check if ID is empty
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID cannot be empty"})
+		return
+	}
+
 	var grade domain.Grade
 	err := c.BindJSON(&grade)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	grade.ID = idInt
+
 	err = h.GradeUsecase.Update(&grade)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -97,7 +120,7 @@ func (h *GradeHandler) Delete(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusOK, gin.H{"message": "Grade deleted successfully"})
 }
 
 func (h *GradeHandler) GetByStudentID(c *gin.Context) {
@@ -107,6 +130,12 @@ func (h *GradeHandler) GetByStudentID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	if len(grades) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No grades found for this student"})
+		return
+	}
+
 	c.JSON(http.StatusOK, grades)
 }
 
@@ -117,6 +146,12 @@ func (h *GradeHandler) GetByCourseID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	if len(grades) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No grades found for this course"})
+		return
+	}
+
 	c.JSON(http.StatusOK, grades)
 }
 
@@ -127,6 +162,12 @@ func (h *GradeHandler) GetByProfessorID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	if len(grades) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No grades found for this professor"})
+		return
+	}
+
 	c.JSON(http.StatusOK, grades)
 }
 

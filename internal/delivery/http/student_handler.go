@@ -4,6 +4,7 @@ import (
 	"golang-technical-test/internal/domain"
 	"golang-technical-test/internal/usecase"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -71,11 +72,28 @@ func (h *StudentHandler) Create(c *gin.Context) {
 }
 
 func (h *StudentHandler) Update(c *gin.Context) {
+	id := c.Param("id")
+
+	// Check if ID is empty
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID cannot be empty"})
+		return
+	}
+
 	var student domain.Student
 	if err := c.ShouldBindJSON(&student); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	student.ID = idInt
+
 	if err := h.StudentUsecase.Update(&student); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

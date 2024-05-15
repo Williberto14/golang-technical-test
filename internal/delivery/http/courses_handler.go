@@ -4,6 +4,7 @@ import (
 	"golang-technical-test/internal/domain"
 	"golang-technical-test/internal/usecase"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -71,11 +72,28 @@ func (h *CoursesHandler) Create(c *gin.Context) {
 }
 
 func (h *CoursesHandler) Update(c *gin.Context) {
+	id := c.Param("id")
+
+	// Check if ID is empty
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID cannot be empty"})
+		return
+	}
+
 	var courses domain.Course
 	if err := c.ShouldBindJSON(&courses); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	courses.ID = idInt
+
 	if err := h.CoursesUsecase.Update(&courses); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -89,5 +107,5 @@ func (h *CoursesHandler) Delete(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusOK, gin.H{"message": "Course deleted successfully"})
 }

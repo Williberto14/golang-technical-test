@@ -67,10 +67,16 @@ func (r *GradeRepository) GetByID(id int) (*domain.Grade, error) {
 }
 
 func (r *GradeRepository) Create(grade *domain.Grade) error {
-	_, err := r.db.Exec("INSERT INTO Grades (StudentID, CourseID, ProfessorID, Grade) VALUES (?, ?, ?, ?)", grade.StudentID, grade.CourseID, grade.ProfessorID, grade.Grade)
+	result, err := r.db.Exec("INSERT INTO Grades (StudentID, CourseID, ProfessorID, Grade) VALUES (?, ?, ?, ?)", grade.StudentID, grade.CourseID, grade.ProfessorID, grade.Grade)
 	if err != nil {
 		return err
 	}
+
+	gradeID, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	grade.ID = int(gradeID)
 
 	return nil
 }
